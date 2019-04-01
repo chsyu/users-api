@@ -1,0 +1,161 @@
+---
+swagger: "2.0"
+info:
+  description: "Users API with userlists"
+  version: "0.3.0"
+  title: "Users API"
+host: "localhost:8080"
+basePath: "/v1"
+schemes:
+- "https"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /users:
+    get:
+      description: "Returns one or more userss."
+      operationId: "usersGET"
+      parameters:
+      - name: "limit"
+        in: "query"
+        description: "Number of userss to return"
+        required: false
+        type: "integer"
+      - name: "offset"
+        in: "query"
+        description: "Number of userss to skip"
+        required: false
+        type: "integer"
+      - name: "search"
+        in: "query"
+        description: "Search term"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "Successful response"
+      security:
+      - basicAuth: []
+      x-swagger-router-controller: "Default"
+    post:
+      operationId: "usersPOST"
+      parameters:
+      - in: "body"
+        name: "newusers"
+        description: "New users"
+        required: true
+        schema:
+          $ref: "#/definitions/newusers"
+      responses:
+        200:
+          description: "Successful response"
+      x-swagger-router-controller: "Default"
+  /users/{users-id}:
+    get:
+      description: "Returns a users."
+      operationId: "usersusers_idGET"
+      parameters:
+      - name: "users-id"
+        in: "path"
+        description: "ID of the users to return"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/usersWithSongs"
+      x-swagger-router-controller: "Default"
+    delete:
+      description: "Deletes a users."
+      operationId: "usersusers_idDELETE"
+      parameters:
+      - name: "users-id"
+        in: "path"
+        description: "ID of the users to delete"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Successful response"
+        410:
+          description: "users already deleted"
+          schema:
+            $ref: "#/definitions/error"
+      x-swagger-router-controller: "Default"
+
+securityDefinitions:
+  basicAuth:
+    description: "Username and password"
+    type: "basic"
+definitions:
+  newusers:
+    properties:
+      name:
+        type: "string"
+        description: "users name"
+      songIds:
+        type: "array"
+        description: "IDs of the songs in the users"
+        items:
+          type: "integer"
+    description: "New users"
+  usersWithSongs:
+    properties:
+      id:
+        type: "integer"
+        description: "ID of the users"
+      name:
+        type: "string"
+        description: "Name of the users"
+      song:
+        type: "array"
+        description: "Song in the users"
+        items:
+          $ref: "#/definitions/song"
+    description: "users with song information"
+    example:
+      song:
+      - artist: "artist"
+        id: 6
+        title: "title"
+      - artist: "artist"
+        id: 6
+        title: "title"
+      name: "name"
+      id: 0
+  song:
+    properties:
+      id:
+        type: "integer"
+        description: "Song ID"
+      title:
+        type: "string"
+        description: "Song title"
+      artist:
+        type: "string"
+        description: "Song artist"
+    description: "Song information"
+    example:
+      artist: "artist"
+      id: 6
+      title: "title"
+  error:
+    properties:
+      errorMessage:
+        type: "string"
+        description: "Human readable error message"
+      logData:
+        $ref: "#/definitions/error_logData"
+    description: "Error information"
+  error_logData:
+    properties:
+      entry:
+        type: "integer"
+        description: "Log entry number"
+      date:
+        type: "string"
+        description: "Log entry date"
+    description: "Data that appears in the log when the error occurs"
